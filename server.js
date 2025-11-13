@@ -24,8 +24,14 @@ connectDB();
 const app = express();
 
 // Middleware
+// Normalize CLIENT_URL to avoid accidental trailing-slash mismatch which
+// causes strict origin comparison to fail in browsers when credentials are used.
+const rawClientUrl = process.env.CLIENT_URL;
+const normalizedClientUrl = rawClientUrl ? rawClientUrl.replace(/\/+$/, '') : 'http://localhost:3001';
+console.log('[server] using CLIENT_URL:', normalizedClientUrl);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3001',
+  origin: normalizedClientUrl,
   credentials: true
 }));
 app.use(express.json());
